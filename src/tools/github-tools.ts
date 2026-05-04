@@ -3,7 +3,7 @@ import type { GitHubService } from "../services/github-service.js";
 import type { ToolDefinition } from "./types.js";
 
 const emptyArgsSchema = z.object({});
-type EmptyArgs = z.infer<typeof emptyArgsSchema>;
+type EmptyArgs = z.output<typeof emptyArgsSchema>;
 
 const createPrArgsSchema = z.object({
   title: z.string().min(1, "title is required"),
@@ -11,11 +11,15 @@ const createPrArgsSchema = z.object({
   head: z.string().min(1, "head is required"),
   base: z.string().min(1, "base must not be empty").default("main"),
 });
-type CreatePrArgs = z.infer<typeof createPrArgsSchema>;
+type CreatePrArgs = z.output<typeof createPrArgsSchema>;
+type CreatePrInput = z.input<typeof createPrArgsSchema>;
 
 export function createGitHubTools(
   service: GitHubService,
-): Array<ToolDefinition<EmptyArgs> | ToolDefinition<CreatePrArgs>> {
+): Array<
+  ToolDefinition<EmptyArgs, unknown, EmptyArgs> |
+  ToolDefinition<CreatePrArgs, unknown, CreatePrInput>
+> {
   return [
     {
       name: "github_list_prs",

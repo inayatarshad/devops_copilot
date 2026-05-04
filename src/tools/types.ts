@@ -1,6 +1,10 @@
 import type { z } from "zod";
 
-export interface ToolDefinition<TArgs = any, TResult = unknown> {
+export interface ToolDefinition<
+  TParsedArgs = any,
+  TResult = unknown,
+  TInputArgs = TParsedArgs,
+> {
   name: string;
   description: string;
   inputSchema: {
@@ -8,6 +12,6 @@ export interface ToolDefinition<TArgs = any, TResult = unknown> {
     properties: Record<string, unknown>;
     required?: string[];
   };
-  argsSchema: z.ZodType<TArgs>;
-  execute: (args: TArgs) => Promise<TResult>;
+  argsSchema: z.ZodType<TParsedArgs, z.ZodTypeDef, TInputArgs>;
+  execute: (args: TParsedArgs) => Promise<TResult>;
 }
