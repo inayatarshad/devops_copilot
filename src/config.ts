@@ -3,20 +3,14 @@ import { z } from "zod";
 
 dotenv.config();
 
-const envSchema = z.object({
+export const envSchema = z.object({
   GITHUB_TOKEN: z.string().min(1, "GITHUB_TOKEN is required"),
   GITHUB_OWNER: z.string().min(1, "GITHUB_OWNER is required"),
   GITHUB_REPO: z.string().min(1, "GITHUB_REPO is required"),
 });
 
-const parsedEnv = envSchema.safeParse(process.env);
+export type AppConfig = z.infer<typeof envSchema>;
 
-if (!parsedEnv.success) {
-  const message = parsedEnv.error.issues
-    .map((issue) => issue.message)
-    .join(", ");
-
-  throw new Error(`Invalid environment configuration: ${message}`);
+export function parseConfig(source: NodeJS.ProcessEnv): AppConfig {
+  return envSchema.parse(source);
 }
-
-export const config = parsedEnv.data;
